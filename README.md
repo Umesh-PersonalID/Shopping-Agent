@@ -1,5 +1,9 @@
 # Shopping Agent UI
 
+First create python venv(agent)
+
+install dependancies
+
 Run the browser UI with the bundled virtualenv:
 
 ```bash
