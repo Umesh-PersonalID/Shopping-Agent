@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Agent UI</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #08111f;
+            --bg-soft: rgba(13, 24, 40, 0.82);
+            --card: rgba(12, 20, 33, 0.9);
+            --card-border: rgba(152, 173, 199, 0.16);
+            --text: #e8eef7;
+            --muted: #9db0c8;
+            --accent: #7cf7d4;
+            --accent-2: #7aa7ff;
+            --danger: #ff7a90;
+            --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(122, 167, 255, 0.24), transparent 36%),
+                radial-gradient(circle at right center, rgba(124, 247, 212, 0.16), transparent 28%),
+                linear-gradient(180deg, #050b15 0%, #0a1322 100%);
+            color: var(--text);
+        }
+
+        .shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 32px 0 48px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 24px;
+        }
+
+        .panel {
+            background: var(--bg-soft);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .headline {
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .headline::after {
+            content: "";
+            position: absolute;
+            inset: auto -40px -60px auto;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124, 247, 212, 0.24), transparent 70%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(124, 247, 212, 0.12);
+            color: var(--accent);
+            font-size: 12px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        h1 {
+            margin: 18px 0 12px;
+            font-size: clamp(2.4rem, 4vw, 4.6rem);
+            line-height: 0.96;
+            letter-spacing: -0.06em;
+            max-width: 10ch;
+        }
+
+        .lede {
+            margin: 0;
+            max-width: 58ch;
+            color: var(--muted);
+            font-size: 1.03rem;
+            line-height: 1.7;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .stat {
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .form-panel,
+        .results-panel {
+            padding: 24px;
+        }
+
+        .section-title {
+            margin: 0 0 6px;
+            font-size: 1.08rem;
+        }
+
+        .section-subtitle {
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.6;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(153, 175, 201, 0.2);
+            background: rgba(4, 10, 19, 0.65);
+            color: var(--text);
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        input:focus {
+            border-color: rgba(124, 247, 212, 0.75);
+            box-shadow: 0 0 0 4px rgba(124, 247, 212, 0.12);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        button {
+            appearance: none;
+            border: 0;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-weight: 700;
+            color: #05121a;
+            background: linear-gradient(135deg, var(--accent), #9af3ff);
+            cursor: pointer;
+            transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+            box-shadow: 0 18px 38px rgba(124, 247, 212, 0.22);
+            width: 100%;
+        }
+
+        button:hover { transform: translateY(-1px); }
+        button:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+        .hint {
+            margin-top: 12px;
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .alert {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: rgba(255, 122, 144, 0.1);
+            border: 1px solid rgba(255, 122, 144, 0.22);
+            color: #ffb7c1;
+        }
+
+        .status {
+            display: none;
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: rgba(122, 167, 255, 0.08);
+            border: 1px solid rgba(122, 167, 255, 0.18);
+            color: #c9dbff;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .recommendation {
+            margin-bottom: 18px;
+            padding: 18px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(124, 247, 212, 0.12), rgba(122, 167, 255, 0.08));
+            border: 1px solid rgba(124, 247, 212, 0.18);
+            line-height: 1.7;
+            min-height: 112px;
+        }
+
+        .recommendation p {
+            margin: 0 0 12px;
+        }
+
+        .recommendation h3 {
+            margin: 0 0 10px;
+            font-size: 1.02rem;
+        }
+
+        .recommendation ul {
+            margin: 0 0 12px;
+            padding-left: 18px;
+        }
+
+        .recommendation li {
+            margin-bottom: 6px;
+        }
+
+        .recommendation strong {
+            color: #f0f7ff;
+            font-weight: 700;
+        }
+
+        .card {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            min-height: 100%;
+            display: grid;
+            gap: 12px;
+        }
+
+        .card-top {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(122, 167, 255, 0.28), rgba(124, 247, 212, 0.2));
+            object-fit: cover;
+            flex: none;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }
+
+        .pill {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #d5e4f7;
+            font-size: 0.82rem;
+        }
+
+        .empty {
+            padding: 24px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 960px) {
+            .hero, .workspace { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="hero">
+            <div class="panel headline">
+                <div class="eyebrow">AI shopping agent</div>
+                <h1>Find better products without leaving the browser.</h1>
+                <p class="lede">
+                    Search for a product, set your budget, and let the agent compare matching shopping results.
+                    The interface shows the filtered products and a final recommendation in one place.
+                </p>
+            </div>
+
+            <div class="panel stats">
+                <div class="stat">
+                    <div class="stat-value" id="searchCount">0</div>
+                    <div class="stat-label">Search results</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="filteredCount">0</div>
+                    <div class="stat-label">Within budget</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="budgetValue">--</div>
+                    <div class="stat-label">Budget</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace">
+            <div class="panel form-panel">
+                <h2 class="section-title">Search setup</h2>
+                <p class="section-subtitle">Enter a product name and your budget. The agent will search shopping results and recommend one option.</p>
+
+                <form id="shoppingForm">
+                    <div class="field">
+                        <label for="query">Product</label>
+                        <input id="query" name="query" type="text" placeholder="Noise cancelling headphones" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="budget">Budget</label>
+                        <input id="budget" name="budget" type="number" min="1" step="0.01" placeholder="150" required />
+                    </div>
+
+                    <div class="button-row">
+                        <button id="submitButton" type="submit">Compare products</button>
+                    </div>
+                </form>
+
+                <div class="hint">
+                    Make sure <strong>SERPAPI_API_KEY</strong> and <strong>OPENAI_API_KEY</strong> are set in your environment before running the app.
+                </div>
+                <div class="alert" id="errorBox"></div>
+            </div>
+
+            <div class="panel results-panel">
+                <h2 class="section-title">Recommendation</h2>
+                <p class="section-subtitle">The agent response appears here after you search.</p>
+
+                <div class="status" id="statusBox"></div>
+                <div class="recommendation" id="recommendationBox">Your recommendation will appear here.</div>
+
+                <h2 class="section-title">Filtered products</h2>
+                <p class="section-subtitle">Only products at or below your budget are shown below.</p>
+                <div class="results-grid" id="productsGrid">
+                    <div class="empty">No results yet. Submit a search to see the product cards.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('shoppingForm');
+        const submitButton = document.getElementById('submitButton');
+        const recommendationBox = document.getElementById('recommendationBox');
+        const productsGrid = document.getElementById('productsGrid');
+        const errorBox = document.getElementById('errorBox');
+        const statusBox = document.getElementById('statusBox');
+        const searchCount = document.getElementById('searchCount');
+        const filteredCount = document.getElementById('filteredCount');
+        const budgetValue = document.getElementById('budgetValue');
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatInlineMarkdown(text) {
+            const escaped = escapeHtml(text);
+            return escaped
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>');
+        }
+
+        function renderRecommendationMarkdown(markdownText) {
+            const lines = String(markdownText || '').replace(/\r\n/g, '\n').split('\n');
+            const htmlParts = [];
+            let listItems = [];
+
+            function flushList() {
+                if (!listItems.length) {
+                    return;
+                }
+                htmlParts.push(`<ul>${listItems.join('')}</ul>`);
+                listItems = [];
+            }
+
+            for (const rawLine of lines) {
+                const line = rawLine.trim();
+
+                if (!line) {
+                    flushList();
+                    continue;
+                }
+
+                const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
+                if (headingMatch) {
+                    flushList();
+                    htmlParts.push(`<h3>${formatInlineMarkdown(headingMatch[1])}</h3>`);
+                    continue;
+                }
+
+                const bulletMatch = line.match(/^[-*]\s+(.+)$/);
+                if (bulletMatch) {
+                    listItems.push(`<li>${formatInlineMarkdown(bulletMatch[1])}</li>`);
+                    continue;
+                }
+
+                flushList();
+                htmlParts.push(`<p>${formatInlineMarkdown(line)}</p>`);
+            }
+
+            flushList();
+            return htmlParts.join('') || '<p>No recommendation yet.</p>';
+        }
+
+        function setError(message) {
+            errorBox.textContent = message;
+            errorBox.style.display = message ? 'block' : 'none';
+        }
+
+        function setStatus(message) {
+            statusBox.textContent = message;
+            statusBox.style.display = message ? 'block' : 'none';
+        }
+
+        function renderProducts(products) {
+            if (!products.length) {
+                productsGrid.innerHTML = '<div class="empty">No products matched this budget. Try a larger budget or a broader search term.</div>';
+                return;
+            }
+
+            productsGrid.innerHTML = products.map((product) => {
+                const thumb = product.thumbnail
+                    ? `<img class="thumb" src="${product.thumbnail}" alt="${product.title}">`
+                    : '<div class="thumb"></div>';
+                const metaParts = [
+                    product.price ? `Price: ${product.price}` : null,
+                    product.source ? `Source: ${product.source}` : null,
+                    product.rating ? `Rating: ${product.rating}` : null,
+                    product.reviews ? `Reviews: ${product.reviews}` : null,
+                ].filter(Boolean);
+                const link = product.link ? `<a class="pill" href="${product.link}" target="_blank" rel="noreferrer">Open product</a>` : '';
+
+                return `
+                    <article class="card">
+                        <div class="card-top">
+                            ${thumb}
+                            <div>
+                                <h3>${product.title}</h3>
+                                <div class="meta">${metaParts.join('<br>')}</div>
+                            </div>
+                        </div>
+                        ${link}
+                    </article>
+                `;
+            }).join('');
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            setError('');
+            setStatus('Searching products and generating recommendation...');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Working...';
+
+            const payload = {
+                query: document.getElementById('query').value.trim(),
+                budget: Number(document.getElementById('budget').value),
+            };
+
+            try {
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Unable to build recommendation.');
+                }
+
+                recommendationBox.innerHTML = renderRecommendationMarkdown(data.recommendation);
+                searchCount.textContent = String(data.search_count);
+                filteredCount.textContent = String(data.filtered_count);
+                budgetValue.textContent = `$${Number(data.budget).toFixed(2)}`;
+                renderProducts(data.products || []);
+                setStatus(`Found ${data.filtered_count} matches under $${Number(data.budget).toFixed(2)}.`);
+            } catch (error) {
+                recommendationBox.innerHTML = '<p>No recommendation yet.</p>';
+                productsGrid.innerHTML = '<div class="empty">No products to show.</div>';
+                setError(error.message || 'Something went wrong.');
+                setStatus('');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Compare products';
+            }
+        });
+    </script>
+</body>
+</html>
