@@ -1,18 +1,16 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-import boto3
+# import boto3
 from runtime import bootstrap_project_python
-
-
-client = boto3.client('secretsmanager', region_name='your-region')
-response = client.get_secret_value(SecretId='prod/service/api-key')
-print(response['SecretString'])
-
-bootstrap_project_python()
-
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
+
+# client = boto3.client('secretsmanager', region_name='your-region')
+# response = client.get_secret_value(SecretId='prod/service/api-key')
+# print(response['SecretString'])
+
+bootstrap_project_python()
 
 from schemas import RecommendationRequest
 from services.recommendation_service import build_recommendation
