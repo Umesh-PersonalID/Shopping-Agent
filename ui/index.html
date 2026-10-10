@@ -276,6 +276,16 @@
             min-height: 100%;
             display: grid;
             gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        a.card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(124, 247, 212, 0.4);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .card-top {
@@ -499,10 +509,11 @@
                     product.rating ? `Rating: ${product.rating}` : null,
                     product.reviews ? `Reviews: ${product.reviews}` : null,
                 ].filter(Boolean);
-                const link = product.link ? `<a class="pill" href="${product.link}" target="_blank" rel="noreferrer">Open product</a>` : '';
+                const tag = product.link ? 'a' : 'article';
+                const href = product.link ? `href="${product.link}" target="_blank" rel="noreferrer"` : '';
 
                 return `
-                    <article class="card">
+                    <${tag} class="card" ${href}>
                         <div class="card-top">
                             ${thumb}
                             <div>
@@ -510,8 +521,7 @@
                                 <div class="meta">${metaParts.join('<br>')}</div>
                             </div>
                         </div>
-                        ${link}
-                    </article>
+                    </${tag}>
                 `;
             }).join('');
         }

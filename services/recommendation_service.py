@@ -9,7 +9,7 @@ def normalize_product(product: dict[str, Any]) -> dict[str, Any]:
         "title": product.get("title", "Untitled product"),
         "price": product.get("price", "N/A"),
         "source": product.get("source", "Unknown"),
-        "link": product.get("link", ""),
+        "link": product.get("link") or product.get("product_link", ""),
         "thumbnail": product.get("thumbnail", ""),
         "rating": product.get("rating"),
         "reviews": product.get("reviews"),
